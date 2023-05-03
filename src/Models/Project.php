@@ -19,6 +19,7 @@ class Project
         $backend,
         $client_name,
         $description;
+
     public $project_id;
 
     private $table = 'projects';
@@ -39,21 +40,25 @@ class Project
         $this->client_name  = htmlspecialchars(strip_tags($this->client_name));
         $this->description  = htmlspecialchars(strip_tags($this->description));
 
-
-        $stmt->bindParam(':project_title', $this->project_title);
-        $stmt->bindParam(':project_type', $this->type);
-        $stmt->bindParam(':project_description', $this->description);
-        $stmt->bindParam(':project_manager', $this->manager);
-        $stmt->bindParam(':frontend', $this->frontend);
-        $stmt->bindParam(':backend', $this->backend);
-        $stmt->bindParam(':client_name', $this->client_name);
-
+        $bindingValues = [
+            ':project_title' => $this->project_title,
+            ':project_title' => $this->project_title,
+            ':project_type' => $this->type,
+            ':project_description' => $this->description,
+            ':project_manager' => $this->manager,
+            ':frontend' => $this->frontend,
+            ':backend' => $this->backend,
+            ':client_name' => $this->client_name,
+        ];
+        foreach ($bindingValues as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
         $stmt->execute();
     }
 
     public function editProject()
     {
-        $sql = "UPDATE {$this->tabsle} SET project_title = :project_title, type=:type, manager=:manager, 
+        $sql = "UPDATE {$this->table} SET project_title = :project_title, type=:type, manager=:manager, 
         frontend=: frontend, backend= :backend,
         client_name=:client_name, 
         description=:description WHERE project_id=:project_id";
@@ -69,14 +74,20 @@ class Project
         $this->description  = htmlspecialchars(strip_tags($this->description));
         $this->project_id  = htmlspecialchars(strip_tags($this->project_id));
 
-        $stmt->bindParam(':project_title', $this->project_title);
-        $stmt->bindParam(':type', $this->type);
-        $stmt->bindParam(':manager', $this->manager);
-        $stmt->bindParam(':clien_name', $this->client_name);
-        $stmt->bindParam(':front_end', $this->frontend);
-        $stmt->bindParam(':backend', $this->backend);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':project_id', $this->project_id);
+        $bindingValues =
+            [
+                ':project_title ' => $this->project_title,
+                ':type ' => $this->type,
+                ':manager ' => $this->manager,
+                ':clien_name ' => $this->client_name,
+                ':front_end ' => $this->frontend,
+                ':backend ' => $this->backend,
+                ':description ' => $this->description,
+                ':project_id ' => $this->project_id,
+            ];
+        foreach ($bindingValues as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
 
         $stmt->execute();
     }
@@ -102,7 +113,7 @@ class Project
         $sql = "SELECT project_id, project_title, type, manager, frontend, backend, client_name, description FROM {$this->table}
 		    WHERE project_id  = :project_id";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':project_id', $this->project_id);
+        $stmt->bindValue(':project_id', $this->project_id);
         $stmt->execute();
         return $stmt;
     }
@@ -118,7 +129,7 @@ class Project
     {
         $sql = "SELECT project_title FROM {$this->table} where project_id = :project_id";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':project_id', $this->project_id);
+        $stmt->bindValue(':project_id', $this->project_id);
         $stmt->execute();
         return $stmt;
     }

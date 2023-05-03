@@ -4,15 +4,13 @@ namespace BugTracking\Models;
 
 class Ticket
 {
-
-
     private $conn;
     public function __construct($db)
     {
         $this->conn = $db;
     }
-    // public
 
+    // public
     private $table = "tickets";
 
     public $ticket_name,
@@ -22,6 +20,7 @@ class Ticket
         $ticket_assigned_to,
         $ticket_status,
         $ticket_priority;
+    public $project_id;
 
     public $startDate, $endDate;
     public $ticket_id;
@@ -32,19 +31,23 @@ class Ticket
         
         VALUES(:ticket_name, :project_name, :ticket_type, :ticket_description, :ticket_assigned_to, :ticket_status, :ticket_priority, :startDate, :endDate)";
 
-
         $stmt = $this->conn->prepare($sql);
+        $bindingValues = [
+            ':ticket_name' =>  $this->ticket_name,
+            ':project_name' =>  $this->project_name,
+            ':ticket_type' =>  $this->ticket_type,
+            ':ticket_description' =>  $this->ticket_description,
+            ':ticket_assigned_to' =>  $this->ticket_assigned_to,
+            ':ticket_status' =>  $this->ticket_status,
+            ':ticket_priority' =>  $this->ticket_priority,
+            ':startDate' =>  $this->startDate,
+            ':endDate' =>  $this->endDate,
 
-        $stmt->bindParam(':ticket_name', $this->ticket_name);
-        $stmt->bindParam(':project_name', $this->project_name);
-        $stmt->bindParam(':ticket_type', $this->ticket_type);
-        $stmt->bindParam(':ticket_description', $this->ticket_description);
-        $stmt->bindParam(':ticket_assigned_to', $this->ticket_assigned_to);
-        $stmt->bindParam(':ticket_status', $this->ticket_status);
-        $stmt->bindParam(':ticket_priority', $this->ticket_priority);
-        $stmt->bindParam(':startDate', $this->startDate);
-        $stmt->bindParam(':endDate', $this->endDate);
+        ];
 
+        foreach ($bindingValues as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
 
         if ($stmt->execute()) {
             return true;
@@ -67,8 +70,7 @@ class Ticket
         $stmt = $this->conn->prepare($sql);
 
         $this->ticket_id = (int) htmlspecialchars(strip_tags($this->ticket_id));
-
-        $stmt->bindParam(':ticket_id', $this->ticket_id);
+        $stmt->bindValue(':ticket_id', $this->ticket_id);
     }
 
     public function updateTicket()
@@ -92,19 +94,23 @@ class Ticket
         $this->ticket_status =  htmlspecialchars(strip_tags($this->ticket_status));
         $this->ticket_priority =  htmlspecialchars(strip_tags($this->ticket_priority));
 
-
-
         $stmt = $this->conn->prepare($sql);
 
-        $stmt->bindParam(':ticket_name', $this->ticket_name);
-        $stmt->bindParam(':project_id', $this->project_id);
-        $stmt->bindParam(':ticket_type', $this->ticket_type);
-        $stmt->bindParam(':ticket_description', $this->ticket_description);
-        $stmt->bindParam(':ticket_assigned_to', $this->ticket_assigned_to);
-        $stmt->bindParam(':ticket_status', $this->ticket_status);
-        $stmt->bindParam(':ticket_priority', $this->ticket_priority);
+        $bindingValues = [
+            ':ticket_name' => $this->ticket_name,
+            ':project_id' => $this->project_id,
+            ':ticket_type' => $this->ticket_type,
+            ':ticket_description' => $this->ticket_description,
+            ':ticket_assigned_to' => $this->ticket_assigned_to,
+            ':ticket_status' => $this->ticket_status,
+            ':ticket_priority' => $this->ticket_priority,
 
 
+        ];
+
+        foreach ($bindingValues as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
         $stmt->execute();
     }
 
@@ -115,7 +121,7 @@ class Ticket
         $sql  = "DELETE FROM {$this->table} WHERE ticket_id = :ticket_id";
         $stmt = $this->conn->prepare($sql);
 
-        $stmt->bindParam(':ticket_id', $this->ticket_id);
+        $stmt->bindValue(':ticket_id', $this->ticket_id);
         $stmt->execute();
     }
 }

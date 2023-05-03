@@ -1,8 +1,6 @@
 <?php
 
 namespace BugTracking\Models;
-
-
 class ContactUs
 {
     public $name, $email, $company, $mobile, $message;
@@ -17,12 +15,17 @@ class ContactUs
     {
         $sql = "INSERT INTO {$this->table}(name, company,email, mobile, message) VALUES(:name, :company, :email, :mobile, :message)";
         $stmt = $this->conn->prepare($sql);
+        $bindingValues = [
+            ":name" => $this->name,
+            ":company" => $this->company,
+            ":email" => $this->email,
+            ":mobile" => $this->mobile,
+            ":message" => $this->message
+        ];
 
-        $stmt->bindParam(":name", $this->name);
-        $stmt->bindParam(":company", $this->company);
-        $stmt->bindParam(":email", $this->email);
-        $stmt->bindParam(":mobile", $this->mobile);
-        $stmt->bindParam(":message", $this->message);
+        foreach($bindingValues as $k => $v){
+            $stmt->bindValue($k, $v);
+        }
         $stmt->execute();
         return $stmt;
     }

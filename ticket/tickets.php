@@ -130,7 +130,7 @@ Actions
     </tbody>
     </table>';
         } else {
-            echo '<p align="center">No Projects Created</p>';
+            echo '<p align="center">No Tickets Created</p>';
         }
 
 
